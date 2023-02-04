@@ -1,0 +1,69 @@
+{
+	"name": "orisai/nette-object-mapper",
+	"description": "Orisai Object Mapper integration for Nette",
+	"keywords": [
+		"api",
+		"array",
+		"conversion",
+		"hydrator",
+		"orisai",
+		"mapper",
+		"mapping",
+		"nette",
+		"object",
+		"parser",
+		"parsing",
+		"schema",
+		"validation",
+		"validator"
+	],
+	"type": "library",
+	"license": "MPL-2.0",
+	"homepage": "https://github.com/orisai/nette-object-mapper",
+	"authors": [
+		{
+			"name": "Marek Bartoš",
+			"homepage": "https://github.com/mabar"
+		}
+	],
+	"require": {
+		"php": ">=7.4.0 <8.3.0",
+		"nette/caching": "^3.1.0",
+		"nette/di": "^3.1.0",
+		"orisai/exceptions": "^1.0.0",
+		"orisai/nette-di": "^1.2.0",
+		"orisai/object-mapper": "^1.0.0"
+	},
+	"require-dev": {
+		"brianium/paratest": "^6.3.0",
+		"infection/infection": "^0.26.0",
+		"orisai/coding-standard": "^3.0.0",
+		"phpstan/extension-installer": "^1.0.0",
+		"phpstan/phpstan": "^1.0.0",
+		"phpstan/phpstan-deprecation-rules": "^1.0.0",
+		"phpstan/phpstan-phpunit": "^1.0.0",
+		"phpstan/phpstan-strict-rules": "^1.0.0",
+		"phpunit/phpunit": "^9.5.0",
+		"staabm/annotate-pull-request-from-checkstyle": "^1.7.0"
+	},
+	"autoload": {
+		"psr-4": {
+			"OriNette\\ObjectMapper\\": "src"
+		}
+	},
+	"autoload-dev": {
+		"psr-4": {
+			"Tests\\OriNette\\ObjectMapper\\": "tests"
+		}
+	},
+	"minimum-stability": "dev",
+	"prefer-stable": true,
+	"config": {
+		"sort-packages": true,
+		"allow-plugins": {
+			"dealerdirect/phpcodesniffer-composer-installer": true,
+			"infection/extension-installer": true,
+			"phpstan/extension-installer": true
+		}
+	}
+}
