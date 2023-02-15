@@ -1,0 +1,32 @@
+includes:
+	- ../vendor/phpstan/phpstan/conf/bleedingEdge.neon
+
+parameters:
+	phpVersion: 70400
+	level: 8
+	tmpDir: ../var/tools/PHPStan
+	resultCachePath: %currentWorkingDirectory%/var/tools/PHPStan/resultCache.php
+
+	checkBenevolentUnionTypes: true
+	checkMissingCallableSignature: true
+	checkInternalClassCaseSensitivity: true
+	checkTooWideReturnTypesInProtectedAndPublicMethods: true
+
+	exceptions:
+		check:
+			missingCheckedExceptionInThrows: true
+			tooWideThrowType: true
+		checkedExceptionClasses:
+			- Orisai\Exceptions\Check\CheckedException
+
+	ignoreErrors:
+		# Deprecations
+		- '#^Fetching deprecated class constant FILES of class Nette\\Caching\\Cache(.+)#'
+
+		# Generics - class-string-map https://psalm.dev/r/155368cea8
+		-
+			message: '#^Property (.+) with generic interface Orisai\\ObjectMapper\\Rules\\Rule does not specify its types\: T_ARGS$#'
+			path: ../src/DI/LazyRuleManager.php
+		-
+			message: '#^Method (.+)RuleManager\:\:getRule\(\) should return T of (.+)Rule but returns (.+)Rule\.$#'
+			path: ../src/DI/LazyRuleManager.php

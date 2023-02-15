@@ -17,8 +17,8 @@
 </p>
 
 <p align="center">
-	<a href="https://github.com/orisai/nette-object-mapper/actions?query=workflow%3Aci">
-		<img src="https://github.com/orisai/nette-object-mapper/workflows/ci/badge.svg">
+	<a href="https://github.com/orisai/nette-object-mapper/actions?query=workflow%3ACI">
+		<img src="https://github.com/orisai/nette-object-mapper/workflows/CI/badge.svg">
 	</a>
 	<a href="https://coveralls.io/r/orisai/nette-object-mapper">
 		<img src="https://badgen.net/coveralls/c/github/orisai/nette-object-mapper/v1.x?cache=300">
