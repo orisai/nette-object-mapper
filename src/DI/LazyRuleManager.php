@@ -4,13 +4,13 @@ namespace OriNette\ObjectMapper\DI;
 
 use Nette\DI\Container;
 use Orisai\Exceptions\Logic\InvalidArgument;
+use Orisai\Exceptions\Logic\InvalidState;
 use Orisai\ObjectMapper\Args\Args;
 use Orisai\ObjectMapper\Rules\Rule;
 use Orisai\ObjectMapper\Rules\RuleManager;
 use function assert;
 use function get_class;
 use function in_array;
-use function sprintf;
 
 final class LazyRuleManager implements RuleManager
 {
@@ -55,11 +55,8 @@ final class LazyRuleManager implements RuleManager
 			return $this->instances[$rule] = $instance;
 		}
 
-		throw InvalidArgument::create()
-			->withMessage(sprintf(
-				'Rule `%s` does not exist.',
-				$rule,
-			));
+		throw InvalidState::create()
+			->withMessage("Rule '$rule' does not exist.");
 	}
 
 	/**

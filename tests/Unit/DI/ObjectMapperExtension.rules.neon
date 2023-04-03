@@ -1,0 +1,9 @@
+extensions:
+	nette.cache: Nette\Bridges\CacheDI\CacheExtension(%tempDir%/nette.cache)
+	orisai.objectMapper: OriNette\ObjectMapper\DI\ObjectMapperExtension
+	test: Tests\OriNette\ObjectMapper\Doubles\RuleAddingExtension
+
+orisai.objectMapper:
+	rules:
+		Tests\OriNette\ObjectMapper\Doubles\TestRule: @test.rule
+		Tests\OriNette\ObjectMapper\Doubles\ExtendingTestRule: Tests\OriNette\ObjectMapper\Doubles\ExtendingTestRule()

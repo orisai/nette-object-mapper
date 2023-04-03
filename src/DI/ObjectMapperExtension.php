@@ -14,7 +14,6 @@ use OriNette\DI\Definitions\DefinitionsLoader;
 use OriNette\ObjectMapper\Cache\NetteMetaCache;
 use Orisai\ObjectMapper\Attributes\AnnotationsMetaSource;
 use Orisai\ObjectMapper\Attributes\AttributesMetaSource;
-use Orisai\ObjectMapper\Meta\DefaultMetaSourceManager;
 use Orisai\ObjectMapper\Meta\MetaCache;
 use Orisai\ObjectMapper\Meta\MetaLoader;
 use Orisai\ObjectMapper\Meta\MetaResolverFactory;
@@ -49,8 +48,6 @@ final class ObjectMapperExtension extends CompilerExtension
 
 	public function loadConfiguration(): void
 	{
-		parent::loadConfiguration();
-
 		$builder = $this->getContainerBuilder();
 		$config = $this->config;
 		$loader = new DefinitionsLoader($this->compiler);
@@ -81,7 +78,7 @@ final class ObjectMapperExtension extends CompilerExtension
 	private function registerMetaSourceManager(ContainerBuilder $builder): ServiceDefinition
 	{
 		$definition = $builder->addDefinition($this->prefix('metaSourceManager'))
-			->setFactory(DefaultMetaSourceManager::class)
+			->setFactory(LazyMetaSourceManager::class)
 			->setType(MetaSourceManager::class)
 			->setAutowired(false);
 
@@ -100,14 +97,16 @@ final class ObjectMapperExtension extends CompilerExtension
 			return;
 		}
 
-		$sourceManagerDefinition->addSetup('addSource', [
-			$builder->addDefinition($this->prefix('metaSource.annotations'))
-				->setFactory(AnnotationsMetaSource::class, [
-					$builder->addDefinition($this->prefix('metaReader.annotations'))
-						->setFactory(AnnotationsMetaReader::class)
-						->setAutowired(false),
-				])
-				->setAutowired(false),
+		$sourceDefinition = $builder->addDefinition($this->prefix('metaSource.annotations'))
+			->setFactory(AnnotationsMetaSource::class, [
+				$builder->addDefinition($this->prefix('metaReader.annotations'))
+					->setFactory(AnnotationsMetaReader::class)
+					->setAutowired(false),
+			])
+			->setAutowired(false);
+
+		$sourceManagerDefinition->addSetup('addLazySource', [
+			$sourceDefinition->getName(),
 		]);
 	}
 
@@ -120,14 +119,16 @@ final class ObjectMapperExtension extends CompilerExtension
 			return;
 		}
 
-		$sourceManagerDefinition->addSetup('addSource', [
-			$builder->addDefinition($this->prefix('metaSource.attributes'))
-				->setFactory(AttributesMetaSource::class, [
-					$builder->addDefinition($this->prefix('metaReader.attributes'))
-						->setFactory(AttributesMetaReader::class)
-						->setAutowired(false),
-				])
-				->setAutowired(false),
+		$sourceDefinition = $builder->addDefinition($this->prefix('metaSource.attributes'))
+			->setFactory(AttributesMetaSource::class, [
+				$builder->addDefinition($this->prefix('metaReader.attributes'))
+					->setFactory(AttributesMetaReader::class)
+					->setAutowired(false),
+			])
+			->setAutowired(false);
+
+		$sourceManagerDefinition->addSetup('addLazySource', [
+			$sourceDefinition->getName(),
 		]);
 	}
 

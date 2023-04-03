@@ -1,0 +1,14 @@
+services:
+	rule.a: Tests\OriNette\ObjectMapper\Doubles\TestRule
+	rule.b: Tests\OriNette\ObjectMapper\Doubles\ExtendingTestRule
+	manager:
+		factory: OriNette\ObjectMapper\DI\LazyRuleManager
+		setup:
+			- addLazyRule(
+				Tests\OriNette\ObjectMapper\Doubles\TestRule,
+				rule.a,
+			)
+			- addLazyRule(
+				Tests\OriNette\ObjectMapper\Doubles\ExtendingTestRule,
+				rule.b,
+			)
