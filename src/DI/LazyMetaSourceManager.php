@@ -3,8 +3,8 @@
 namespace OriNette\ObjectMapper\DI;
 
 use Nette\DI\Container;
-use Orisai\ObjectMapper\Meta\MetaSource;
-use Orisai\ObjectMapper\Meta\MetaSourceManager;
+use Orisai\ObjectMapper\Meta\Source\MetaSource;
+use Orisai\ObjectMapper\Meta\Source\MetaSourceManager;
 use function assert;
 
 final class LazyMetaSourceManager implements MetaSourceManager
@@ -25,9 +25,6 @@ final class LazyMetaSourceManager implements MetaSourceManager
 		$this->services[] = $serviceName;
 	}
 
-	/**
-	 * @return array<MetaSource>
-	 */
 	public function getAll(): array
 	{
 		$instances = [];

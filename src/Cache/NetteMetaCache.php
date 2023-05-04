@@ -4,7 +4,7 @@ namespace OriNette\ObjectMapper\Cache;
 
 use Nette\Caching\Cache;
 use Nette\Caching\Storage;
-use Orisai\ObjectMapper\Meta\MetaCache;
+use Orisai\ObjectMapper\Meta\Cache\MetaCache;
 use Orisai\ObjectMapper\Meta\Runtime\RuntimeMeta;
 
 final class NetteMetaCache implements MetaCache

@@ -4,7 +4,6 @@ namespace OriNette\ObjectMapper\DI;
 
 use Nette\DI\CompilerExtension;
 use Nette\DI\ContainerBuilder;
-use Nette\DI\Definitions\FactoryDefinition;
 use Nette\DI\Definitions\Reference;
 use Nette\DI\Definitions\ServiceDefinition;
 use Nette\PhpGenerator\Literal;
@@ -12,12 +11,12 @@ use Nette\Schema\Expect;
 use Nette\Schema\Schema;
 use OriNette\DI\Definitions\DefinitionsLoader;
 use OriNette\ObjectMapper\Cache\NetteMetaCache;
-use Orisai\ObjectMapper\Attributes\AnnotationsMetaSource;
-use Orisai\ObjectMapper\Attributes\AttributesMetaSource;
-use Orisai\ObjectMapper\Meta\MetaCache;
+use Orisai\ObjectMapper\Meta\Cache\MetaCache;
 use Orisai\ObjectMapper\Meta\MetaLoader;
 use Orisai\ObjectMapper\Meta\MetaResolverFactory;
-use Orisai\ObjectMapper\Meta\MetaSourceManager;
+use Orisai\ObjectMapper\Meta\Source\AnnotationsMetaSource;
+use Orisai\ObjectMapper\Meta\Source\AttributesMetaSource;
+use Orisai\ObjectMapper\Meta\Source\MetaSourceManager;
 use Orisai\ObjectMapper\Processing\DefaultProcessor;
 use Orisai\ObjectMapper\Processing\ObjectCreator;
 use Orisai\ObjectMapper\Processing\Processor;
@@ -146,27 +145,21 @@ final class ObjectMapperExtension extends CompilerExtension
 		ContainerBuilder $builder,
 		ServiceDefinition $ruleManagerDefinition,
 		ServiceDefinition $objectCreatorDefinition
-	): FactoryDefinition
+	): ServiceDefinition
 	{
-		$definition = new FactoryDefinition();
-		$definition->setImplement(MetaResolverFactory::class)
+		return $builder->addDefinition($this->prefix('metaResolver.factory'))
+			->setFactory(MetaResolverFactory::class, [
+				'ruleManager' => $ruleManagerDefinition,
+				'objectCreator' => $objectCreatorDefinition,
+			])
 			->setAutowired(false);
-		$builder->addDefinition($this->prefix('metaResolver.factory'), $definition);
-
-		$resultDefinition = $definition->getResultDefinition();
-		$resultDefinition->setArguments([
-			'ruleManager' => $ruleManagerDefinition,
-			'objectCreator' => $objectCreatorDefinition,
-		]);
-
-		return $definition;
 	}
 
 	private function registerMetaLoader(
 		ContainerBuilder $builder,
 		ServiceDefinition $metaCacheDefinition,
 		ServiceDefinition $sourceManagerDefinition,
-		FactoryDefinition $resolverFactoryDefinition
+		ServiceDefinition $resolverFactoryDefinition
 	): ServiceDefinition
 	{
 		return $builder->addDefinition($this->prefix('metaLoader'))

@@ -41,8 +41,8 @@
 
 ```php
 use Orisai\ObjectMapper\MappedObject;
-use Orisai\ObjectMapper\Attributes\Expect\MappedObjectValue;
-use Orisai\ObjectMapper\Attributes\Expect\StringValue;
+use Orisai\ObjectMapper\Rules\MappedObjectValue;
+use Orisai\ObjectMapper\Rules\StringValue;
 
 final class UserInput implements MappedObject
 {
