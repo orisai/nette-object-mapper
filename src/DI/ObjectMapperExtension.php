@@ -4,6 +4,7 @@ namespace OriNette\ObjectMapper\DI;
 
 use Nette\DI\CompilerExtension;
 use Nette\DI\ContainerBuilder;
+use Nette\DI\Definitions\Definition;
 use Nette\DI\Definitions\Reference;
 use Nette\DI\Definitions\ServiceDefinition;
 use Nette\PhpGenerator\Literal;
@@ -26,7 +27,6 @@ use Orisai\ReflectionMeta\Reader\AttributesMetaReader;
 use stdClass;
 use function assert;
 use function is_string;
-use function str_replace;
 
 /**
  * @property-read stdClass $config
@@ -34,13 +34,17 @@ use function str_replace;
 final class ObjectMapperExtension extends CompilerExtension
 {
 
+	private ServiceDefinition $ruleManagerDefinition;
+
+	/** @var list<Definition|Reference> */
+	private array $ruleDefinitions = [];
+
 	public function getConfigSchema(): Schema
 	{
 		return Expect::structure([
 			'debug' => Expect::bool(false),
-			'rules' => Expect::arrayOf(
+			'rules' => Expect::listOf(
 				DefinitionsLoader::schema(),
-				Expect::string(),
 			),
 		]);
 	}
@@ -53,7 +57,8 @@ final class ObjectMapperExtension extends CompilerExtension
 
 		$metaCacheDefinition = $this->registerMetaCache($builder, $config->debug);
 		$sourceManagerDefinition = $this->registerMetaSourceManager($builder);
-		$ruleManagerDefinition = $this->registerRuleManager($config, $builder, $loader);
+		$this->ruleManagerDefinition = $ruleManagerDefinition = $this->registerRuleManager($builder);
+		$this->ruleDefinitions = $this->registerRules($config, $loader);
 		$objectCreatorDefinition = $this->registerObjectCreator($builder);
 		$resolverFactoryDefinition = $this->registerMetaResolverFactory(
 			$builder,
@@ -71,6 +76,14 @@ final class ObjectMapperExtension extends CompilerExtension
 			$metaLoaderDefinition,
 			$ruleManagerDefinition,
 			$objectCreatorDefinition,
+		);
+	}
+
+	public function beforeCompile(): void
+	{
+		$this->addRulesToRuleManager(
+			$this->ruleDefinitions,
+			$this->ruleManagerDefinition,
 		);
 	}
 
@@ -170,36 +183,62 @@ final class ObjectMapperExtension extends CompilerExtension
 			]);
 	}
 
-	private function registerRuleManager(
-		stdClass $config,
-		ContainerBuilder $builder,
-		DefinitionsLoader $loader
-	): ServiceDefinition
+	private function registerRuleManager(ContainerBuilder $builder): ServiceDefinition
 	{
-		$ruleManagerDefinition = $builder->addDefinition($this->prefix('ruleManager'))
+		return $builder->addDefinition($this->prefix('ruleManager'))
 			->setFactory(LazyRuleManager::class)
 			->setType(RuleManager::class)
 			->setAutowired(false);
+	}
 
-		foreach ($config->rules as $ruleName => $ruleConfig) {
-			assert(is_string($ruleName));
-
-			$ruleKey = str_replace('\\', '', $ruleName);
-			$ruleDefinition = $loader->loadDefinitionFromConfig(
+	/**
+	 * @return list<Definition|Reference>
+	 */
+	private function registerRules(stdClass $config, DefinitionsLoader $loader): array
+	{
+		$definitions = [];
+		foreach ($config->rules as $ruleKey => $ruleConfig) {
+			$definitions[] = $loader->loadDefinitionFromConfig(
 				$ruleConfig,
 				$this->prefix("rule.$ruleKey"),
 			);
+		}
+
+		return $definitions;
+	}
+
+	/**
+	 * @param list<Definition|Reference> $ruleDefinitions
+	 */
+	private function addRulesToRuleManager(
+		array $ruleDefinitions,
+		ServiceDefinition $ruleManagerDefinition
+	): void
+	{
+		$builder = $this->getContainerBuilder();
+
+		foreach ($ruleDefinitions as $ruleDefinition) {
+			if ($ruleDefinition instanceof Reference) {
+				$ruleDefinition = $ruleDefinition->isName()
+					? $builder->getDefinition(
+						$ruleDefinition->getValue(),
+					)
+					: $builder->getDefinitionByType(
+						$ruleDefinition->getValue(),
+					);
+			}
+
+			assert($ruleDefinition instanceof ServiceDefinition);
+
+			$ruleName = $ruleDefinition->getFactory()->entity;
+			assert(is_string($ruleName));
 
 			$ruleManagerDefinition->addSetup('?->addLazyRule(?, ?)', [
 				$ruleManagerDefinition,
-				new Literal("\\{$ruleName}::class"),
-				$ruleDefinition instanceof Reference
-					? $ruleDefinition->getValue()
-					: $ruleDefinition->getName(),
+				new Literal("\\$ruleName::class"),
+				$ruleDefinition->getName(),
 			]);
 		}
-
-		return $ruleManagerDefinition;
 	}
 
 	private function registerObjectCreator(ContainerBuilder $builder): ServiceDefinition

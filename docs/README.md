@@ -34,9 +34,11 @@ Register rules in format `Fqn\Of\RuleClass: @rule.definition`
 orisai.objectMapper:
 	rules:
 		# instance of class
-		Example\CustomRule: Example\CustomRule()
+		- Example\CustomRule()
 		# service 'example.rule'
-		Example\CustomRule: @example.rule
+		- @example.rule
+		# service of type 'Example\Rule'
+		- @Example\Rule
 ```
 
 ## Usage
