@@ -1,12 +1,47 @@
 parameters:
 	ignoreErrors:
 		-
+			message: "#^Method OriNette\\\\ObjectMapper\\\\DI\\\\LazyDependencyInjectorManager\\:\\:get\\(\\) should return T of Orisai\\\\ObjectMapper\\\\Processing\\\\DependencyInjector but returns Orisai\\\\ObjectMapper\\\\Processing\\\\DependencyInjector\\.$#"
+			count: 1
+			path: ../src/DI/LazyDependencyInjectorManager.php
+
+		-
+			message: "#^Call to static method PHPUnit\\\\Framework\\\\Assert\\:\\:assertInstanceOf\\(\\) with 'Tests\\\\\\\\OriNette\\\\\\\\ObjectMapper\\\\\\\\Doubles\\\\\\\\Dependencies\\\\\\\\DependentBaseVoInjector' and Tests\\\\OriNette\\\\ObjectMapper\\\\Doubles\\\\Dependencies\\\\DependentBaseVoInjector will always evaluate to true\\.$#"
+			count: 1
+			path: ../tests/Unit/DI/LazyDependencyInjectorManagerTest.php
+
+		-
+			message: "#^Call to static method PHPUnit\\\\Framework\\\\Assert\\:\\:assertInstanceOf\\(\\) with 'Tests\\\\\\\\OriNette\\\\\\\\ObjectMapper\\\\\\\\Doubles\\\\\\\\Dependencies\\\\\\\\DependentChildVoInjector1' and Tests\\\\OriNette\\\\ObjectMapper\\\\Doubles\\\\Dependencies\\\\DependentChildVoInjector1 will always evaluate to true\\.$#"
+			count: 1
+			path: ../tests/Unit/DI/LazyDependencyInjectorManagerTest.php
+
+		-
+			message: "#^Call to static method PHPUnit\\\\Framework\\\\Assert\\:\\:assertInstanceOf\\(\\) with 'Tests\\\\\\\\OriNette\\\\\\\\ObjectMapper\\\\\\\\Doubles\\\\\\\\Dependencies\\\\\\\\DependentBaseVoInjector' and Tests\\\\OriNette\\\\ObjectMapper\\\\Doubles\\\\Dependencies\\\\DependentBaseVoInjector will always evaluate to true\\.$#"
+			count: 1
+			path: ../tests/Unit/DI/ObjectMapperExtensionTest.php
+
+		-
+			message: "#^Call to static method PHPUnit\\\\Framework\\\\Assert\\:\\:assertInstanceOf\\(\\) with 'Tests\\\\\\\\OriNette\\\\\\\\ObjectMapper\\\\\\\\Doubles\\\\\\\\Dependencies\\\\\\\\DependentChildVoInjector1' and Tests\\\\OriNette\\\\ObjectMapper\\\\Doubles\\\\Dependencies\\\\DependentChildVoInjector1 will always evaluate to true\\.$#"
+			count: 1
+			path: ../tests/Unit/DI/ObjectMapperExtensionTest.php
+
+		-
+			message: "#^Call to static method PHPUnit\\\\Framework\\\\Assert\\:\\:assertInstanceOf\\(\\) with 'Tests\\\\\\\\OriNette\\\\\\\\ObjectMapper\\\\\\\\Doubles\\\\\\\\Dependencies\\\\\\\\DependentChildVoInjector2' and Tests\\\\OriNette\\\\ObjectMapper\\\\Doubles\\\\Dependencies\\\\DependentChildVoInjector2 will always evaluate to true\\.$#"
+			count: 1
+			path: ../tests/Unit/DI/ObjectMapperExtensionTest.php
+
+		-
 			message: "#^Call to static method PHPUnit\\\\Framework\\\\Assert\\:\\:assertInstanceOf\\(\\) with 'Tests\\\\\\\\OriNette\\\\\\\\ObjectMapper\\\\\\\\Doubles\\\\\\\\ExtendingTestRule' and Tests\\\\OriNette\\\\ObjectMapper\\\\Doubles\\\\ExtendingTestRule will always evaluate to true\\.$#"
 			count: 1
 			path: ../tests/Unit/DI/ObjectMapperExtensionTest.php
 
 		-
 			message: "#^Call to static method PHPUnit\\\\Framework\\\\Assert\\:\\:assertInstanceOf\\(\\) with 'Tests\\\\\\\\OriNette\\\\\\\\ObjectMapper\\\\\\\\Doubles\\\\\\\\TestRule' and Tests\\\\OriNette\\\\ObjectMapper\\\\Doubles\\\\TestRule will always evaluate to true\\.$#"
+			count: 1
+			path: ../tests/Unit/DI/ObjectMapperExtensionTest.php
+
+		-
+			message: "#^Method Tests\\\\OriNette\\\\ObjectMapper\\\\Unit\\\\DI\\\\ObjectMapperExtensionTest\\:\\:testDependencies\\(\\) throws checked exception Orisai\\\\ObjectMapper\\\\Exception\\\\InvalidData but it's missing from the PHPDoc @throws tag\\.$#"
 			count: 1
 			path: ../tests/Unit/DI/ObjectMapperExtensionTest.php
 

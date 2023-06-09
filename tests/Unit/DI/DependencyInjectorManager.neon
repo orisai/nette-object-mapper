@@ -1,0 +1,9 @@
+services:
+	injector.a: Tests\OriNette\ObjectMapper\Doubles\Dependencies\DependentBaseVoInjector(\stdClass())
+	injector.b: Tests\OriNette\ObjectMapper\Doubles\Dependencies\DependentChildVoInjector1('string')
+	manager:
+		factory: OriNette\ObjectMapper\DI\LazyDependencyInjectorManager
+		arguments:
+			serviceMap:
+				Tests\OriNette\ObjectMapper\Doubles\Dependencies\DependentBaseVoInjector: injector.a
+				Tests\OriNette\ObjectMapper\Doubles\Dependencies\DependentChildVoInjector1: injector.b

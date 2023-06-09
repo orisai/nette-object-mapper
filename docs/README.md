@@ -6,6 +6,7 @@ Orisai Object Mapper integration for Nette
 
 - [Setup](#setup)
 - [Registering custom rules](#registering-custom-rules)
+- [Registering dependency injectors](#registering-dependency-injectors)
 - [Usage](#usage)
 
 ## Setup
@@ -28,7 +29,7 @@ orisai.objectMapper:
 
 ## Registering custom rules
 
-Register rules in format `Fqn\Of\RuleClass: @rule.definition`
+Register custom rules
 
 ```neon
 orisai.objectMapper:
@@ -40,6 +41,25 @@ orisai.objectMapper:
 		# service of type 'Example\Rule'
 		- @Example\Rule
 ```
+
+Creating custom rules is explained by [orisai/object-mapper](https://github.com/orisai/object-mapper).
+
+## Registering dependency injectors
+
+Register dependency injectors used to pass dependencies to mapped objects
+
+```neon
+orisai.objectMapper:
+	dependencyInjectors:
+		# instance of class
+		- Example\FooDependencyInjector()
+		# service 'example.fooDependencyInjector'
+		- @example.fooDependencyInjector
+		# service of type 'Example\FooDependencyInjector'
+		- @Example\FooDependencyInjector
+```
+
+Injecting dependencies is explained by [orisai/object-mapper](https://github.com/orisai/object-mapper).
 
 ## Usage
 

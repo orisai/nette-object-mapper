@@ -1,0 +1,13 @@
+extensions:
+	nette.cache: Nette\Bridges\CacheDI\CacheExtension(%tempDir%/nette.cache)
+	test: Tests\OriNette\ObjectMapper\Doubles\Dependencies\InjectorAddingExtension
+	orisai.objectMapper: OriNette\ObjectMapper\DI\ObjectMapperExtension
+
+services:
+	test2: Tests\OriNette\ObjectMapper\Doubles\Dependencies\DependentChildVoInjector1('string')
+
+orisai.objectMapper:
+	dependencyInjectors:
+		- @test.injector
+		- Tests\OriNette\ObjectMapper\Doubles\Dependencies\DependentChildVoInjector2(123)
+		- @Tests\OriNette\ObjectMapper\Doubles\Dependencies\DependentChildVoInjector1

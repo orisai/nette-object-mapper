@@ -37,12 +37,20 @@ final class ObjectMapperExtension extends CompilerExtension
 	private ServiceDefinition $ruleManagerDefinition;
 
 	/** @var list<Definition|Reference> */
-	private array $ruleDefinitions = [];
+	private array $ruleDefinitions;
+
+	private ServiceDefinition $dependencyInjectorManagerDefinition;
+
+	/** @var list<Definition|Reference> */
+	private array $injectorDefinitions = [];
 
 	public function getConfigSchema(): Schema
 	{
 		return Expect::structure([
 			'debug' => Expect::bool(false),
+			'dependencyInjectors' => Expect::listOf(
+				DefinitionsLoader::schema(),
+			),
 			'rules' => Expect::listOf(
 				DefinitionsLoader::schema(),
 			),
@@ -59,7 +67,10 @@ final class ObjectMapperExtension extends CompilerExtension
 		$sourceManagerDefinition = $this->registerMetaSourceManager($builder);
 		$this->ruleManagerDefinition = $ruleManagerDefinition = $this->registerRuleManager($builder);
 		$this->ruleDefinitions = $this->registerRules($config, $loader);
-		$objectCreatorDefinition = $this->registerObjectCreator($builder);
+		$this->dependencyInjectorManagerDefinition = $dependencyInjectorManagerDefinition
+			= $this->registerDependencyInjectorManager($builder);
+		$this->injectorDefinitions = $this->registerInjectors($config, $loader);
+		$objectCreatorDefinition = $this->registerObjectCreator($builder, $dependencyInjectorManagerDefinition);
 		$resolverFactoryDefinition = $this->registerMetaResolverFactory(
 			$builder,
 			$ruleManagerDefinition,
@@ -81,9 +92,17 @@ final class ObjectMapperExtension extends CompilerExtension
 
 	public function beforeCompile(): void
 	{
+		$builder = $this->getContainerBuilder();
+
 		$this->addRulesToRuleManager(
+			$builder,
 			$this->ruleDefinitions,
 			$this->ruleManagerDefinition,
+		);
+		$this->addInjectorsToDependencyInjectorManager(
+			$builder,
+			$this->injectorDefinitions,
+			$this->dependencyInjectorManagerDefinition,
 		);
 	}
 
@@ -211,12 +230,11 @@ final class ObjectMapperExtension extends CompilerExtension
 	 * @param list<Definition|Reference> $ruleDefinitions
 	 */
 	private function addRulesToRuleManager(
+		ContainerBuilder $builder,
 		array $ruleDefinitions,
 		ServiceDefinition $ruleManagerDefinition
 	): void
 	{
-		$builder = $this->getContainerBuilder();
-
 		foreach ($ruleDefinitions as $ruleDefinition) {
 			if ($ruleDefinition instanceof Reference) {
 				$ruleDefinition = $ruleDefinition->isName()
@@ -241,11 +259,72 @@ final class ObjectMapperExtension extends CompilerExtension
 		}
 	}
 
-	private function registerObjectCreator(ContainerBuilder $builder): ServiceDefinition
+	private function registerDependencyInjectorManager(ContainerBuilder $builder): ServiceDefinition
+	{
+		return $builder->addDefinition($this->prefix('dependencyInjectorManager'))
+			->setFactory(LazyDependencyInjectorManager::class)
+			->setAutowired(false);
+	}
+
+	/**
+	 * @return list<Definition|Reference>
+	 */
+	private function registerInjectors(stdClass $config, DefinitionsLoader $loader): array
+	{
+		$definitions = [];
+		foreach ($config->dependencyInjectors as $injectorKey => $injectorConfig) {
+			$definitions[] = $loader->loadDefinitionFromConfig(
+				$injectorConfig,
+				$this->prefix("dependencyInjector.$injectorKey"),
+			);
+		}
+
+		return $definitions;
+	}
+
+	/**
+	 * @param list<Definition|Reference> $injectorDefinitions
+	 */
+	private function addInjectorsToDependencyInjectorManager(
+		ContainerBuilder $builder,
+		array $injectorDefinitions,
+		ServiceDefinition $dependencyInjectorManagerDefinition
+	): void
+	{
+		$serviceMap = [];
+		foreach ($injectorDefinitions as $injectorDefinition) {
+			if ($injectorDefinition instanceof Reference) {
+				$injectorDefinition = $injectorDefinition->isName()
+					? $builder->getDefinition(
+						$injectorDefinition->getValue(),
+					)
+					: $builder->getDefinitionByType(
+						$injectorDefinition->getValue(),
+					);
+			}
+
+			assert($injectorDefinition instanceof ServiceDefinition);
+
+			$injectorName = $injectorDefinition->getFactory()->entity;
+			assert(is_string($injectorName));
+
+			$serviceMap[$injectorName] = $injectorDefinition->getName();
+		}
+
+		$dependencyInjectorManagerDefinition->setArguments([
+			'serviceMap' => $serviceMap,
+		]);
+	}
+
+	private function registerObjectCreator(
+		ContainerBuilder $builder,
+		ServiceDefinition $dependencyInjectorManagerDefinition
+	): ServiceDefinition
 	{
 		return $builder->addDefinition($this->prefix('objectCreator'))
-			->setFactory(LazyObjectCreator::class)
-			->setType(ObjectCreator::class)
+			->setFactory(ObjectCreator::class, [
+				$dependencyInjectorManagerDefinition,
+			])
 			->setAutowired(false);
 	}
 

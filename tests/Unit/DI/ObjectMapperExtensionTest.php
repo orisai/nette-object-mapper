@@ -4,8 +4,8 @@ namespace Tests\OriNette\ObjectMapper\Unit\DI;
 
 use OriNette\DI\Boot\ManualConfigurator;
 use OriNette\ObjectMapper\Cache\NetteMetaCache;
+use OriNette\ObjectMapper\DI\LazyDependencyInjectorManager;
 use OriNette\ObjectMapper\DI\LazyMetaSourceManager;
-use OriNette\ObjectMapper\DI\LazyObjectCreator;
 use OriNette\ObjectMapper\DI\LazyRuleManager;
 use Orisai\ObjectMapper\Meta\Cache\MetaCache;
 use Orisai\ObjectMapper\Meta\MetaLoader;
@@ -15,6 +15,7 @@ use Orisai\ObjectMapper\Meta\Source\AttributesMetaSource;
 use Orisai\ObjectMapper\Meta\Source\MetaSource;
 use Orisai\ObjectMapper\Meta\Source\MetaSourceManager;
 use Orisai\ObjectMapper\Processing\DefaultProcessor;
+use Orisai\ObjectMapper\Processing\DependencyInjectorManager;
 use Orisai\ObjectMapper\Processing\ObjectCreator;
 use Orisai\ObjectMapper\Processing\Processor;
 use Orisai\ObjectMapper\Rules\RuleManager;
@@ -23,8 +24,14 @@ use Orisai\ReflectionMeta\Reader\AttributesMetaReader;
 use Orisai\ReflectionMeta\Reader\MetaReader;
 use Orisai\Utils\Dependencies\DependenciesTester;
 use PHPUnit\Framework\TestCase;
+use stdClass;
+use Tests\OriNette\ObjectMapper\Doubles\Dependencies\DependentBaseVoInjector;
+use Tests\OriNette\ObjectMapper\Doubles\Dependencies\DependentChildVO;
+use Tests\OriNette\ObjectMapper\Doubles\Dependencies\DependentChildVoInjector1;
+use Tests\OriNette\ObjectMapper\Doubles\Dependencies\DependentChildVoInjector2;
 use Tests\OriNette\ObjectMapper\Doubles\ExtendingTestRule;
 use Tests\OriNette\ObjectMapper\Doubles\TestRule;
+use function assert;
 use function dirname;
 use function mkdir;
 use const PHP_VERSION_ID;
@@ -84,9 +91,14 @@ final class ObjectMapperExtensionTest extends TestCase
 		self::assertInstanceOf(LazyRuleManager::class, $ruleManager);
 		self::assertNull($container->getByType(RuleManager::class, false));
 
+		self::assertTrue($container->isCreated('orisai.objectMapper.dependencyInjectorManager'));
+		$dependencyInjectorManager = $container->getService('orisai.objectMapper.dependencyInjectorManager');
+		self::assertInstanceOf(LazyDependencyInjectorManager::class, $dependencyInjectorManager);
+		self::assertNull($container->getByType(DependencyInjectorManager::class, false));
+
 		self::assertTrue($container->isCreated('orisai.objectMapper.objectCreator'));
 		$objectCreator = $container->getService('orisai.objectMapper.objectCreator');
-		self::assertInstanceOf(LazyObjectCreator::class, $objectCreator);
+		self::assertInstanceOf(ObjectCreator::class, $objectCreator);
 		self::assertNull($container->getByType(ObjectCreator::class, false));
 	}
 
@@ -165,6 +177,44 @@ final class ObjectMapperExtensionTest extends TestCase
 
 		self::assertInstanceOf(TestRule::class, $ruleManager->getRule(TestRule::class));
 		self::assertInstanceOf(ExtendingTestRule::class, $ruleManager->getRule(ExtendingTestRule::class));
+	}
+
+	public function testDependencies(): void
+	{
+		$configurator = new ManualConfigurator($this->rootDir);
+		$configurator->setForceReloadContainer();
+		$configurator->addConfig(__DIR__ . '/ObjectMapperExtension.depedencies.neon');
+
+		$container = $configurator->createContainer();
+
+		$dependencyInjectorManager = $container->getService('orisai.objectMapper.dependencyInjectorManager');
+		self::assertInstanceOf(LazyDependencyInjectorManager::class, $dependencyInjectorManager);
+
+		self::assertInstanceOf(
+			DependentBaseVoInjector::class,
+			$dependencyInjectorManager->get(DependentBaseVoInjector::class),
+		);
+		self::assertInstanceOf(
+			DependentChildVoInjector1::class,
+			$dependencyInjectorManager->get(DependentChildVoInjector1::class),
+		);
+		self::assertInstanceOf(
+			DependentChildVoInjector2::class,
+			$dependencyInjectorManager->get(DependentChildVoInjector2::class),
+		);
+
+		$processor = $container->getByType(Processor::class);
+		assert($processor !== null);
+
+		$vo = $processor->process([], DependentChildVO::class);
+		self::assertEquals(
+			new DependentChildVO(
+				new stdClass(),
+				'string',
+				123,
+			),
+			$vo,
+		);
 	}
 
 }
