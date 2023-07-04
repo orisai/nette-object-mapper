@@ -72,9 +72,9 @@ final class UserAddressInput implements MappedObject
 use Orisai\ObjectMapper\Exception\InvalidData;
 use Orisai\ObjectMapper\Printers\ErrorVisualPrinter;
 use Orisai\ObjectMapper\Printers\TypeToStringConverter;
-use Orisai\ObjectMapper\Processing\DefaultProcessor;
+use Orisai\ObjectMapper\Processing\Processor;
 
-$processor = new DefaultProcessor(...);
+$processor = $container->getByType(Processor::class);
 $errorPrinter = new ErrorVisualPrinter(new TypeToStringConverter());
 
 $data = [
