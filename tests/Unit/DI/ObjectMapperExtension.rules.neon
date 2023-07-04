@@ -5,6 +5,7 @@ extensions:
 
 services:
 	test2: Tests\OriNette\ObjectMapper\Doubles\TestRule2
+	nette.cache.storage: Nette\Caching\Storages\MemoryStorage
 
 orisai.objectMapper:
 	rules:

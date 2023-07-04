@@ -5,6 +5,7 @@ extensions:
 
 services:
 	test2: Tests\OriNette\ObjectMapper\Doubles\Dependencies\DependentChildVoInjector1('string')
+	nette.cache.storage: Nette\Caching\Storages\MemoryStorage
 
 orisai.objectMapper:
 	dependencyInjectors:

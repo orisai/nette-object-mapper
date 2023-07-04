@@ -1,3 +1,6 @@
 extensions:
 	nette.cache: Nette\Bridges\CacheDI\CacheExtension(%tempDir%/nette.cache)
 	orisai.objectMapper: OriNette\ObjectMapper\DI\ObjectMapperExtension
+
+services:
+	nette.cache.storage: Nette\Caching\Storages\MemoryStorage
