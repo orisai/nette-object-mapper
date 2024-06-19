@@ -31,7 +31,6 @@ use Tests\OriNette\ObjectMapper\Doubles\Dependencies\DependentChildVoInjector1;
 use Tests\OriNette\ObjectMapper\Doubles\Dependencies\DependentChildVoInjector2;
 use Tests\OriNette\ObjectMapper\Doubles\ExtendingTestRule;
 use Tests\OriNette\ObjectMapper\Doubles\TestRule;
-use function assert;
 use function dirname;
 use function mkdir;
 use const PHP_VERSION_ID;
@@ -204,7 +203,6 @@ final class ObjectMapperExtensionTest extends TestCase
 		);
 
 		$processor = $container->getByType(Processor::class);
-		assert($processor !== null);
 
 		$vo = $processor->process([], DependentChildVO::class);
 		self::assertEquals(

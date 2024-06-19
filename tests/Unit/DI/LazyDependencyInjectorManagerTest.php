@@ -8,7 +8,6 @@ use Orisai\Exceptions\Logic\InvalidArgument;
 use PHPUnit\Framework\TestCase;
 use Tests\OriNette\ObjectMapper\Doubles\Dependencies\DependentBaseVoInjector;
 use Tests\OriNette\ObjectMapper\Doubles\Dependencies\DependentChildVoInjector1;
-use function assert;
 use function dirname;
 use function mkdir;
 use const PHP_VERSION_ID;
@@ -36,7 +35,6 @@ final class LazyDependencyInjectorManagerTest extends TestCase
 
 		$container = $configurator->createContainer();
 		$manager = $container->getByType(LazyDependencyInjectorManager::class);
-		assert($manager !== null);
 
 		// Lazy
 		self::assertFalse($container->isCreated('injector.a'));
@@ -63,7 +61,6 @@ final class LazyDependencyInjectorManagerTest extends TestCase
 
 		$container = $configurator->createContainer();
 		$manager = $container->getByType(LazyDependencyInjectorManager::class);
-		assert($manager !== null);
 
 		$this->expectException(InvalidArgument::class);
 		$this->expectExceptionMessage(
@@ -90,7 +87,6 @@ MSG,
 
 		$container = $configurator->createContainer();
 		$manager = $container->getByType(LazyDependencyInjectorManager::class);
-		assert($manager !== null);
 
 		$this->expectException(InvalidArgument::class);
 		$this->expectExceptionMessage(
