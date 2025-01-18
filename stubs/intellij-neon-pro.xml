@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE neon PUBLIC "-//NEON//Neon plugin XML V0.0.1//EN" "../.idea/intellij-neon-pro/xmlSources/Neon.xsd">
+<neon vendor="orisai/nette-object-mapper" version="1">
+	<extensions>
+		<extension type="OriNette\ObjectMapper\DI\ObjectMapperExtension">
+			<schema>
+				<structure>
+					<field name="debug" default="false">
+						<bool/>
+					</field>
+					<field name="dependencyInjectors">
+						<listOf>
+							<value>
+								<useReusable ref="definition"/>
+							</value>
+						</listOf>
+					</field>
+					<field name="rules">
+						<listOf>
+							<value>
+								<useReusable ref="definition"/>
+							</value>
+						</listOf>
+					</field>
+				</structure>
+			</schema>
+			<services>
+				<service name="metaSourceManager" type="Orisai\ObjectMapper\Meta\Source\MetaSourceManager"/>
+				<service name="metaSource.annotations" type="Orisai\ReflectionMeta\Reader\AnnotationsMetaReader"/>
+				<service name="metaSource.attributes" type="Orisai\ReflectionMeta\Reader\AttributesMetaReader"/>
+				<service name="metaCache" type="Orisai\ObjectMapper\Meta\Cache\MetaCache"/>
+				<service name="metaResolver.factory" type="Orisai\ObjectMapper\Meta\MetaResolverFactory"/>
+				<service name="metaLoader" type="Orisai\ObjectMapper\Meta\MetaLoader"/>
+				<service name="ruleManager" type="Orisai\ObjectMapper\Rules\RuleManager"/>
+				<service name="dependencyInjectorManager" type="Orisai\ObjectMapper\Processing\DependencyInjectorManager"/>
+				<service name="objectCreator" type="Orisai\ObjectMapper\Processing\ObjectCreator"/>
+				<service name="processor" type="Orisai\ObjectMapper\Processing\Processor"/>
+			</services>
+		</extension>
+	</extensions>
+	<reusables>
+		<reusable id="definition">
+			<string/>
+			<arrayOf>
+				<key>
+					<int/>
+					<string/>
+				</key>
+				<value>
+					<mixed/>
+				</value>
+			</arrayOf>
+			<type value="object"/>
+		</reusable>
+	</reusables>
+</neon>
