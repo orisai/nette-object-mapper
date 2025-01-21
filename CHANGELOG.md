@@ -13,7 +13,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
 
-- Require orisai/object-mapper:^0.3.0
+- Composer
+	- Allow PHP 8.4
+	- Require orisai/object-mapper:^0.3.0
 
 ## [0.1.1](https://github.com/orisai/nette-object-mapper/compare/0.1.0...0.1.1) - 2024-06-22
 
