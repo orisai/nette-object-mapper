@@ -6,6 +6,11 @@ parameters:
 			path: ../src/DI/LazyDependencyInjectorManager.php
 
 		-
+			message: "#^Parameter \\#1 \\$type of method Nette\\\\DI\\\\ContainerBuilder\\:\\:getDefinitionByType\\(\\) expects class\\-string, string given\\.$#"
+			count: 2
+			path: ../src/DI/ObjectMapperExtension.php
+
+		-
 			message: "#^Call to static method PHPUnit\\\\Framework\\\\Assert\\:\\:assertInstanceOf\\(\\) with 'Tests\\\\\\\\OriNette\\\\\\\\ObjectMapper\\\\\\\\Doubles\\\\\\\\Dependencies\\\\\\\\DependentBaseVoInjector' and Tests\\\\OriNette\\\\ObjectMapper\\\\Doubles\\\\Dependencies\\\\DependentBaseVoInjector will always evaluate to true\\.$#"
 			count: 1
 			path: ../tests/Unit/DI/LazyDependencyInjectorManagerTest.php
